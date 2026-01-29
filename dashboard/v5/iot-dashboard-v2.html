@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="fr" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IoT Guadeloupe - Live Data | Orange</title>
+    
+    <!-- Orange Boosted CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/boosted@5.3.8/dist/css/boosted.min.css" rel="stylesheet" integrity="sha384-kwpgedOHSHo219WTezLqyMOgCWremFb5TML711U5X8c4TJMMBAyhHFf2gNv78IpY" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boosted@5.3.8/dist/css/orange-helvetica.min.css" integrity="sha384-A0Qk1uKfS1i83/YuU13i2nx5pk79PkIfNFOVzTcjCMPGKIDj9Lqx9lJmV7cdBVQZ" crossorigin="anonymous">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="iot-dashboard.css">    
+    <!-- Chart.js for history visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- MQTT & Three.js -->
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- Orange Header -->
+    <header class="navbar navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+               <img src="Orange_small_logo.png" alt="Orange Logo" height="30">
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <h1 class="h5 mb-0 text-white">IoT Dashboard LTE-M</h1>
+                <span class="badge" id="statusBadge">
+                    <span class="visually-hidden">Status:</span>
+                    <span id="statusText">Déconnecté</span>
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container-xxl py-4">
+        <!-- Location Card -->
+        <div class="card mb-4 border-start border-primary border-4">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="location-icon">
+                        <svg width="48" height="48" fill="#ff7900">
+                            <use href="#location-pin"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="h5 mb-1">Guadeloupe</h2>
+                        <p class="mb-2 text-body-secondary">Capteur BME280 + LSM6DSOX via LTE-M</p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <span class="badge text-bg-primary">SampleOAGua</span>
+                            <span class="badge text-bg-primary">urn:lo:nsid:SampleData</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Section Title -->
+        <h3 class="h6 text-uppercase fw-bold text-body-secondary mb-3">
+            <svg width="16" height="16" fill="currentColor" class="me-2">
+                <use href="#activity"/>
+            </svg>
+            Données en temps réel
+        </h3>
+
+        <!-- Data Cards Grid -->
+        <div class="row g-3 mb-4">
+            <!-- Temperature Card -->
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 data-card" id="cardTemperature" data-type="temperature">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="card-icon">🌡️</span>
+                                <div>
+                                    <h4 class="h6 mb-0">Température</h4>
+                                    <small class="text-body-tertiary font-monospace">dev/data/guadeloupe/temperature</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-body-tertiary text-body font-monospace" id="timeTemperature">--:--:--</span>
+                        </div>
+                        <div class="value-display mb-3">
+                            <span class="value-number" id="valueTemperature">--</span>
+                            <span class="value-unit">°C</span>
+                        </div>
+                        <div class="mini-chart" id="chartTemperature"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pressure Card -->
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 data-card" id="cardPressure" data-type="pressure">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="card-icon">🔵</span>
+                                <div>
+                                    <h4 class="h6 mb-0">Pression</h4>
+                                    <small class="text-body-tertiary font-monospace">dev/data/guadeloupe/pression</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-body-tertiary text-body font-monospace" id="timePressure">--:--:--</span>
+                        </div>
+                        <div class="value-display mb-3">
+                            <span class="value-number" id="valuePressure">--</span>
+                            <span class="value-unit">Pa</span>
+                        </div>
+                        <div class="mini-chart" id="chartPressure"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Humidity Card -->
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 data-card" id="cardHumidity" data-type="humidity">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="card-icon">💧</span>
+                                <div>
+                                    <h4 class="h6 mb-0">Humidité</h4>
+                                    <small class="text-body-tertiary font-monospace">dev/data/guadeloupe/humidite</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-body-tertiary text-body font-monospace" id="timeHumidity">--:--:--</span>
+                        </div>
+                        <div class="value-display mb-3">
+                            <span class="value-number" id="valueHumidity">--</span>
+                            <span class="value-unit">%</span>
+                        </div>
+                        <div class="mini-chart" id="chartHumidity"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Position 3D Card -->
+            <div class="col-12 col-lg-6">
+                <div class="card h-100 data-card" id="cardPosition" data-type="position">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="card-icon">🧭</span>
+                                <div>
+                                    <h4 class="h6 mb-0">Position 3D dans l'espace</h4>
+                                    <small class="text-body-tertiary font-monospace">dev/data/guadeloupe/position</small>
+                                </div>
+                            </div>
+                            <span class="badge bg-body-tertiary text-body font-monospace" id="timePosition">--:--:--</span>
+                        </div>
+                        
+                        <!-- 3D Visualization -->
+                        <div class="visualization-3d">
+                            <div class="viz-container position-relative" id="canvasContainer">
+                                <!-- Canvas Three.js -->
+                                <canvas id="threejsCanvas"></canvas>
+                                
+                                <!-- Angle indicators -->
+                                <div class="angle-indicators position-absolute top-0 start-0 end-0 p-2 d-flex gap-2">
+                                    <div class="flex-fill angle-box text-center">
+                                        <small class="d-block text-body-tertiary">Pitch</small>
+                                        <strong class="d-block text-primary fs-5"><span id="angleX">0</span>°</strong>
+                                    </div>
+                                    <div class="flex-fill angle-box text-center">
+                                        <small class="d-block text-body-tertiary">Roll</small>
+                                        <strong class="d-block text-primary fs-5"><span id="angleY">0</span>°</strong>
+                                    </div>
+                                    <div class="flex-fill angle-box text-center">
+                                        <small class="d-block text-body-tertiary">Yaw</small>
+                                        <strong class="d-block text-primary fs-5"><span id="angleZ">0</span>°</strong>
+                                    </div>
+                                </div>
+                                
+                                <!-- Controls -->
+                                <div class="controls-overlay position-absolute bottom-0 start-0 end-0 p-2 d-flex justify-content-between align-items-center">
+                                    <small class="control-hint badge bg-body text-body">🖱️ Glisser pour pivoter</small>
+                                    <button class="btn btn-sm btn-primary" onclick="resetOrientation()" title="Réinitialiser">
+                                        🔄 Reset
+                                    </button>
+                                </div>
+                                
+                                <!-- Status message -->
+                                <div class="status-message position-absolute top-50 start-50 translate-middle" id="statusMessage3D">
+                                    <div class="card border-warning bg-body-tertiary">
+                                        <div class="card-body text-center">
+                                            <div class="mb-2">⏳</div>
+                                            <small>En attente des données d'orientation...</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =============== NOUVELLE SECTION HISTORIQUE =============== -->
+        <h3 class="h6 text-uppercase fw-bold text-body-secondary mb-3 mt-5">
+            <svg width="16" height="16" fill="currentColor" class="me-2">
+                <use href="#graph"/>
+            </svg>
+            Historique des données (Supabase)
+        </h3>
+
+        <!-- History Controls -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="row align-items-center g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Période d'historique</label>
+                        <select class="form-select" id="historyPeriod" onchange="loadHistory(this.value)">
+                            <option value="1">Dernière heure</option>
+                            <option value="6">6 dernières heures</option>
+                            <option value="24" selected>Dernières 24h</option>
+                            <option value="168">7 derniers jours</option>
+                            <option value="720">30 derniers jours</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Statut</label>
+                        <div>
+                            <span class="badge bg-secondary" id="historyStatus">Non chargé</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" id="loadHistoryBtn" onclick="loadHistory(document.getElementById('historyPeriod').value)">
+                                📊 Charger
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="exportToCSV()">
+                                💾 CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-body-secondary mb-3">📈 Température</h6>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Moy.</small>
+                                <strong id="statTempAvg" class="text-orange">--</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Min.</small>
+                                <strong id="statTempMin" class="text-info">--</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Max.</small>
+                                <strong id="statTempMax" class="text-danger">--</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-body-secondary mb-3">💧 Humidité</h6>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Moy.</small>
+                                <strong id="statHumAvg" class="text-orange">--</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Min.</small>
+                                <strong id="statHumMin" class="text-info">--</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Max.</small>
+                                <strong id="statHumMax" class="text-danger">--</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="text-body-secondary mb-3">🔵 Pression</h6>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Moy.</small>
+                                <strong id="statPressAvg" class="text-orange">--</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Min.</small>
+                                <strong id="statPressMin" class="text-info">--</strong>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-body-tertiary d-block">Max.</small>
+                                <strong id="statPressMax" class="text-danger">--</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Chart -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    📉 Graphique d'évolution
+                </h5>
+            </div>
+            <div class="card-body">
+                <div style="height: 400px; position: relative;">
+                    <canvas id="historyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Table -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    📋 Tableau de données
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark" style="position: sticky; top: 0; z-index: 10;">
+                            <tr>
+                                <th>Timestamp</th>
+                                <th class="text-end">Température</th>
+                                <th class="text-end">Humidité</th>
+                                <th class="text-end">Pression</th>
+                                <th class="text-center">Device ID</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <tr>
+                                <td colspan="5" class="text-center text-body-secondary py-4">
+                                    Aucune donnée chargée. Cliquez sur "Charger l'historique"
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <nav>
+                    <ul class="pagination pagination-sm mb-0 justify-content-center" id="historyPagination">
+                        <li class="page-item disabled">
+                            <span class="page-link">Aucune donnée</span>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+
+        <!-- Connection Panel -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="h6 mb-0">
+                    <svg width="16" height="16" fill="currentColor" class="me-2">
+                        <use href="#plug"/>
+                    </svg>
+                    Connexion MQTT
+                </h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-dark font-monospace mb-3">
+                    <strong>Broker:</strong> broker.hivemq.com<br>
+                    <strong> Port WebSocket:</strong> 8083
+                </div>
+                
+                <div class="list-group mb-3">
+                    <div class="list-group-item d-flex align-items-center gap-2" id="topicTemp">
+                        <span class="topic-status"></span>
+                        <code class="flex-grow-1">dev/data/guadeloupe/temperature</code>
+                    </div>
+                    <div class="list-group-item d-flex align-items-center gap-2" id="topicPressure">
+                        <span class="topic-status"></span>
+                        <code class="flex-grow-1">dev/data/guadeloupe/pression</code>
+                    </div>
+                    <div class="list-group-item d-flex align-items-center gap-2" id="topicHumidity">
+                        <span class="topic-status"></span>
+                        <code class="flex-grow-1">dev/data/guadeloupe/humidite</code>
+                    </div>
+                    <div class="list-group-item d-flex align-items-center gap-2" id="topicPosition">
+                        <span class="topic-status"></span>
+                        <code class="flex-grow-1">dev/data/guadeloupe/position</code>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary w-100" id="connectBtn" onclick="toggleConnection()">
+                    Se connecter au broker
+                </button>
+            </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="h6 mb-0">
+                        <svg width="16" height="16" fill="currentColor" class="me-2">
+                            <use href="#journal"/>
+                        </svg>
+                        Journal d'activité
+                    </h3>
+                    <button class="btn btn-sm btn-outline-danger" onclick="clearActivityLog()" title="Effacer le journal">
+                        🗑️ Effacer
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="log-container" id="logContainer" style="max-height: 300px; overflow-y: auto;">
+                    <div class="log-entry">
+                        <span class="log-time">--:--:--</span>
+                        <span class="log-message">En attente de connexion...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SVG Icons -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="location-pin" viewBox="0 0 16 16">
+            <path d="M8 0a5 5 0 0 0-5 5c0 3.5 5 11 5 11s5-7.5 5-11a5 5 0 0 0-5-5zm0 7a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+        </symbol>
+        <symbol id="activity" viewBox="0 0 16 16">
+            <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13z"/>
+        </symbol>
+        <symbol id="plug" viewBox="0 0 16 16">
+            <path d="M6 0a.5.5 0 0 1 .5.5V3h3V.5a.5.5 0 0 1 1 0V3h1a.5.5 0 0 1 .5.5v3A3.5 3.5 0 0 1 8.5 10c-.002.434-.01.845-.04 1.22-.041.514-.126 1.003-.317 1.424a2.083 2.083 0 0 1-.97 1.028C6.725 13.9 6.169 14 5.5 14c-.998 0-1.61.33-1.974.718A1.922 1.922 0 0 0 3 16H2c0-.616.232-1.367.797-1.968C3.374 13.42 4.261 13 5.5 13c.581 0 .962-.088 1.218-.219.241-.123.4-.3.514-.55.121-.266.193-.621.23-1.09.027-.34.035-.718.037-1.141A3.5 3.5 0 0 1 4 6.5v-3a.5.5 0 0 1 .5-.5h1V.5A.5.5 0 0 1 6 0zM5 4v2.5A2.5 2.5 0 0 0 7.5 9h1A2.5 2.5 0 0 0 11 6.5V4H5z"/>
+        </symbol>
+        <symbol id="journal" viewBox="0 0 16 16">
+            <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+            <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+        </symbol>
+        <symbol id="graph" viewBox="0 0 16 16">
+            <path d="M0 0h1v15h15v1H0V0Zm14.817 3.113a.5.5 0 0 1 .07.704l-4.5 5.5a.5.5 0 0 1-.74.037L7.06 6.767l-3.656 5.027a.5.5 0 0 1-.808-.588l4-5.5a.5.5 0 0 1 .758-.06l2.609 2.61 4.15-5.073a.5.5 0 0 1 .704-.07Z"/>
+        </symbol>
+    </svg>
+
+    <!-- Orange Boosted JS -->
+    <script src="https://cdn.jsdelivr.net/npm/boosted@5.3.8/dist/js/boosted.bundle.min.js" integrity="sha384-lSjE7ZAWc1Wiua5r2jyHbPL07FiKkHPWCXugD3qTq4o4M4YZQzLTrDF1CXrjxU/m" crossorigin="anonymous"></script>
+    
+    <!-- Custom JS -->
+    <script src="iot-dashboard.js"></script>
+    
+    <script>
+        // Helper functions
+        function toggleConnection() {
+            connect();
+        }
+        
+        function resetOrientation() {
+            deviceOrientation = { x: 0, y: 0, z: 0 };
+            applyDeviceOrientation();
+        }
+    </script>
+</body>
+</html>
