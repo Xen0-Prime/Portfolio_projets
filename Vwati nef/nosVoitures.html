@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" media="screen" href="nosVoitures.css">
+    <script>
+        function toggleBlock(element) {
+        const content = element.nextElementSibling;
+
+        if (content.style.display === "block") {
+            content.style.display = "none"; // Réduire le bloc
+        } else {
+            content.style.display = "block"; // Ouvrir le bloc
+        }
+        }
+    </script>
+    <title>Voiti Nèf</title>
+</head>
+<body>
+    <header>
+        <img src="ressource_voiture/logo.png" alt="logo de Voiti nèf" class="logo">
+        <center>
+            
+            <h1 class="titre">Nos voitures</h1>
+            <nav class="navBar">
+                <ul class="navUl">
+                    <li><a href="Accueil.html">Accueil</a></li>
+                    <li><a href="nosVoitures.html">Nos voitures</a></li>
+                    <li><a href="aPropos.html">À propos</a></li>
+                </ul>
+            </nav>
+        </center>
+    </header>
+        <main class="contenu">
+                <div class="voiture">                    
+                    <div class="toggle-header" onclick="toggleBlock(this)">
+                        <img src="ressource_voiture/voitures/audi_a3.png" alt="Voiture 1">
+                        <h3>Audi A3</h3>
+                    </div>
+                    <div class="toggle-content">
+                        <p>
+                            <ul>
+                                <li>Année : 2023</li>
+                                <li>Cylindré : 2.0L</li>
+                                <li>Puissance : 150ch</li>
+                                <li>Carburant : Diesel</li>
+                                <li>Prix : 35 000 €</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+                <div class="voiture">
+                    <div class="toggle-header2" onclick="toggleBlock(this)">
+                        <img src="ressource_voiture/voitures/vw_polo-.png" alt="Voiture 2">
+                        <h3>Volkswagen Polo</h3>
+                    </div>
+                    <div class="toggle-content2">
+                        <p>
+                            <ul>
+                                <li>Année : 2023</li>
+                                <li>Cylindré : 1.0L</li>
+                                <li>Puissance : 95ch</li>
+                                <li>Carburant : Essence</li>
+                                <li>Prix : 22 000 €</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+                <div class="voiture">
+                    <div class="toggle-header4" onclick="toggleBlock(this)">
+                        <img src="ressource_voiture/voitures/citroen_c3.png" alt="Voiture 3">
+                        <h3>Citroën C3</h3>
+                    </div>
+                    <div class="toggle-content3">
+                        <p>
+                            <ul>
+                                <li>Année : 2023</li>
+                                <li>Cylindré : 1.2L</li>
+                                <li>Puissance : 110ch</li>
+                                <li>Carburant : Essence</li>
+                                <li>Prix : 19 500 €</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+                <div class="voiture">
+                    <div class="toggle-header4" onclick="toggleBlock(this)">
+                        <img src="ressource_voiture/voitures/fiat_500.png" alt="Voiture 4">
+                        <h3>Fiat 500</h3>
+                    </div>
+                    <div class="toggle-content4">
+                        <p>
+                            <ul>
+                                <li>Année : 2023</li>
+                                <li>Cylindré : 1.0L Hybride</li>
+                                <li>Puissance : 70ch</li>
+                                <li>Carburant : Hybride</li>
+                                <li>Prix : 18 000 €</li>
+                            </ul>
+                        </p>
+                    </div>
+                </div>
+        </main>
+        
+        <footer>
+            <p>© 2024 Voiti Nèf - Tous droits réservés</p>
+            <div class="reseauxSociaux">
+                <a href="https://www.facebook.com/?locale=fr_FR">
+                    <img src="reseauxSociaux/Facebook.png"  alt="Facebook" class="fb">
+                </a>
+                <a href="https://www.instagram.com/">
+                    <img src="reseauxSociaux/instagram.png" alt="Instagram" class="insta">
+                </a>
+                <a href="https://x.com/i/flow/login">
+                    <img src="reseauxSociaux/twitter.png" alt="Twitter" class="twt">
+                </a>      
+            </div>
+            <center class="adresse">
+                <p>
+                    Voiti Nèf, Rue des Palmiers, Pointe-à-Pitre, Guadeloupe
+                </p>
+            </center>
+        </footer>
+    </body>
+</html

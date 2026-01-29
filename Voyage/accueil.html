@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Accueil</title>
+        <link rel="stylesheet" href="accueil.css">
+    </head>
+    <body>
+        <header class="site-header">
+            <div class="logo">🌍 TravelNow</div>
+                <nav class="nav-menu">
+                    <a href="accueil.html">Accueil</a>
+                    <a href="voyages.html">Voyages</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+        </header>
+        <div class="carousel">
+            <button class="prev">&#10094;</button>
+            <div class="carousel-images">
+                <img src="Paris.jpg" class="carousel-item" alt="Paris">
+                <img src="NYC-Top-of-The-Rock-1.jpg" class="carousel-item" alt="NY">
+                <img src="istockphoto-1390815938-612x612.jpg" class="carousel-item" alt="Galapagos">
+                <img src="bartolome_1.webp" class="carousel-item" alt="Vinland">
+                <img src="9187.jpg" class="carousel-item" alt="Tokyo">
+                <img src="Le Cap  Afrique-du-Sud Découverte.jpg" class="carousel-item" alt="Afrique du Sud">
+            </div>
+            <button class="next">&#10095;</button>
+        </div>
+        
+        <br>
+        <section class="presentation">
+          <h2>Bienvenue sur TravelNow</h2>
+          <p>
+            TravelNow est votre compagnon idéal pour organiser des voyages de rêve aux quatre coins du monde. Que vous soyez amateur de plages paradisiaques, de grandes villes, ou d’aventures en pleine nature, nous avons ce qu’il vous faut !
+          </p>
+        
+          <div class="services">
+            <div class="services">
+              <div class="service-card">
+                <h3>✈️ Réservation de vols</h3>
+                <p>Comparez et réservez des vols au meilleur prix partout dans le monde.</p>
+                <a href="Reservations.html" class="btn-service">Réserver votre futur voyage</a>
+              </div>
+            
+              <div class="service-card">
+                <h3>🏨 Hôtels & Hébergements</h3>
+                <p>Des hôtels confortables, des auberges locales ou des logements insolites.</p>
+                <a href="Hotel.html" class="btn-service1">Réserver votre Hôtel/Hébergement</a>
+              </div>
+            
+              <div class="service-card">
+                <h3>📦 Packs tout compris</h3>
+                <p>Vol + hôtel + activités : profitez de nos formules clé en main !</p>
+                <a href="activites.html" class="btn-service2">Prévoyez vos prochaines activités</a>
+              </div>
+            
+              <div class="service-card">
+                <h3>🌍 Destinations variées</h3>
+                <p>Europe, Asie, Amériques, Afrique… trouvez votre prochaine destination.</p>
+                <a href="destination.html" class="btn-service">Découvrez nos destinations</a>
+              </div>
+          </div>
+        </section>
+        <br>
+        <bottom>
+        Rechercher par note : 
+	<form action="commentaires.php" method="post" id="note">
+		<input type="text required" placeholder=""id="note" name="note"/>
+	</form>
+	<button type="submit" form="note"> valider </button>
+
+	<br> <br>
+
+	Recherche par nom d'utilisateur :
+
+	<form action="commentaires.php" method="post" id="nom_utilisateur">
+		<input type="text required" placeholder="nom d'utilisateur"id="nom_utilisateur" name="nom_utilisateur"/>
+	</form>
+	<button type="submit" form="nom_utilisateur"> valider </button>
+       
+        </bottom>
+    <script src="accueil.js"></script>
+        </body>
+</html>

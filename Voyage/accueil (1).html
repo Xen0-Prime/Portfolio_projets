@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title> Accueil</title>
+</head>
+<body>
+
+	Recherche par numéro de département : 
+	<form action="liste_num_departement.php" method="post" id="num_dept">
+		<input type="text required" placeholder="numéro du departement"id="num_departement" name="num_departement"/>
+	</form>
+	<button type="submit" form="num_dept"> valider </button>
+
+	<br> <br>
+
+	Recherche par nom du département :
+
+	<form action="liste_nom_departement.php" method="post" id="nom_dept">
+		<input type="text required" placeholder="nom du departement"id="nom_departement" name="nom_departement"/>
+	</form>
+	<button type="submit" form="nom_dept"> valider </button>
+
+</body>
+</html>
